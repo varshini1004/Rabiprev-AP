@@ -1324,36 +1324,39 @@ function calcProgress() {
   document.getElementById('progressPct').textContent = pct+'%';
 }
 
-// ========== IP‑BASED GEOLOCATION (no permission, no API key) ==========
+// ========== IP‑BASED GEOLOCATION using ip-api.com (free, no key, reliable) ==========
 function detectAndSetCity() {
-  fetch('https://ipapi.co/json/')
+  fetch('http://ip-api.com/json/')
     .then(res => res.json())
     .then(data => {
-      const city = data.city;
-      if (city) {
-        // Try to match exactly (case-insensitive) to our CITY_TO_DISTRICT keys
-        const matchedKey = Object.keys(CITY_TO_DISTRICT).find(
-          key => key.toLowerCase() === city.toLowerCase()
-        );
-        if (matchedKey && currentCity !== matchedKey) {
-          currentCity = matchedKey;
-          populateCityDropdown(allCities);
-          renderContacts();
-          // Show a small temporary notice
-          const noticeDiv = document.createElement('div');
-          noticeDiv.className = 'geo-notice';
-          noticeDiv.innerHTML = `📍 Detected city: ${currentCity}`;
-          const headerDiv = document.querySelector('.ch');
-          if (headerDiv) headerDiv.after(noticeDiv);
-          setTimeout(() => noticeDiv.remove(), 4000);
-        } else if (!matchedKey) {
-          // Optional: fallback to district? We'll just ignore.
-          console.log("City from IP not in our list:", city);
+      if (data.status === 'success') {
+        const city = data.city;
+        if (city) {
+          // Try to match exactly (case-insensitive) to our CITY_TO_DISTRICT keys
+          const matchedKey = Object.keys(CITY_TO_DISTRICT).find(
+            key => key.toLowerCase() === city.toLowerCase()
+          );
+          if (matchedKey && currentCity !== matchedKey) {
+            currentCity = matchedKey;
+            populateCityDropdown(allCities);
+            renderContacts();
+            // Show a small temporary notice
+            const noticeDiv = document.createElement('div');
+            noticeDiv.className = 'geo-notice';
+            noticeDiv.innerHTML = `📍 Detected city: ${currentCity}`;
+            const headerDiv = document.querySelector('.ch');
+            if (headerDiv) headerDiv.after(noticeDiv);
+            setTimeout(() => noticeDiv.remove(), 4000);
+          } else if (!matchedKey) {
+            console.log("City from IP not in our list:", city);
+          }
         }
+      } else {
+        console.log("IP geolocation failed:", data.message);
       }
     })
     .catch(err => {
-      console.log("IP geolocation failed:", err);
+      console.log("IP geolocation fetch error:", err);
       // Silently fail; user can still search manually.
     });
 }
@@ -1364,7 +1367,7 @@ function detectAndSetCity() {
   renderContacts();
   renderGuide('🩸 Injured Stray');
   loadTheme();
-  detectAndSetCity();   // <-- IP‑based city detection (no permission required)
+  detectAndSetCity();   // <-- IP‑based city detection (no permission, works on GitHub Pages)
 })();
 </script>
 </body>
