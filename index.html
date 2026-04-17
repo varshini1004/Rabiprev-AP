@@ -370,7 +370,6 @@ body.light-theme .cb {
   padding: 2rem;
   max-width: 1440px;
   margin: 0 auto;
-  /* removed top padding, now natural */
 }
 
 /* left column */
@@ -763,6 +762,60 @@ footer {
   margin-top: 1rem;
 }
 
+/* ===== FLOATING SOS BUTTON ===== */
+.sos-float {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 64px;
+  height: 64px;
+  background: #dc2626;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(220,38,38,0.5), 0 0 0 0 rgba(220,38,38,0.4);
+  cursor: pointer;
+  z-index: 1000;
+  transition: all 0.2s ease;
+  animation: pulse-float 1.8s infinite;
+  border: 2px solid white;
+}
+
+.sos-float:hover {
+  transform: scale(1.08);
+  background: #b91c1c;
+}
+
+.sos-float a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: white;
+}
+
+@keyframes pulse-float {
+  0% { box-shadow: 0 4px 14px rgba(220,38,38,0.5), 0 0 0 0 rgba(220,38,38,0.6); }
+  70% { box-shadow: 0 4px 14px rgba(220,38,38,0.5), 0 0 0 12px rgba(220,38,38,0); }
+  100% { box-shadow: 0 4px 14px rgba(220,38,38,0.5), 0 0 0 0 rgba(220,38,38,0); }
+}
+
+/* geolocation notice */
+.geo-notice {
+  font-size: 0.65rem;
+  margin-top: 0.3rem;
+  color: var(--text-muted);
+  background: var(--bg-glass);
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+}
+
 @media (max-width: 860px) {
   .mg {
     grid-template-columns: 1fr;
@@ -774,6 +827,15 @@ footer {
   }
   .theme-toggle {
     order: 2;
+  }
+  .sos-float {
+    width: 56px;
+    height: 56px;
+    bottom: 16px;
+    right: 16px;
+  }
+  .sos-float a {
+    font-size: 1.5rem;
   }
 }
 </style>
@@ -849,8 +911,13 @@ footer {
 
 <footer class="z">Rabiprev · Shawred Analytics PLC · Andhra Pradesh</footer>
 
+<!-- FLOATING SOS BUTTON -->
+<div class="sos-float">
+  <a href="tel:1962" title="Emergency SOS - Call 1962">📞</a>
+</div>
+
 <script>
-// ==================== FULL DATA WITH COMPLETE ADDRESSES (restored from original) ====================
+// ==================== FULL DATA WITH COMPLETE ADDRESSES ====================
 const AP_CONTACTS = {
   "Nellore": {
     district: "Nellore",
@@ -1257,12 +1324,47 @@ function calcProgress() {
   document.getElementById('progressPct').textContent = pct+'%';
 }
 
+// ========== IP‑BASED GEOLOCATION (no permission, no API key) ==========
+function detectAndSetCity() {
+  fetch('https://ipapi.co/json/')
+    .then(res => res.json())
+    .then(data => {
+      const city = data.city;
+      if (city) {
+        // Try to match exactly (case-insensitive) to our CITY_TO_DISTRICT keys
+        const matchedKey = Object.keys(CITY_TO_DISTRICT).find(
+          key => key.toLowerCase() === city.toLowerCase()
+        );
+        if (matchedKey && currentCity !== matchedKey) {
+          currentCity = matchedKey;
+          populateCityDropdown(allCities);
+          renderContacts();
+          // Show a small temporary notice
+          const noticeDiv = document.createElement('div');
+          noticeDiv.className = 'geo-notice';
+          noticeDiv.innerHTML = `📍 Detected city: ${currentCity}`;
+          const headerDiv = document.querySelector('.ch');
+          if (headerDiv) headerDiv.after(noticeDiv);
+          setTimeout(() => noticeDiv.remove(), 4000);
+        } else if (!matchedKey) {
+          // Optional: fallback to district? We'll just ignore.
+          console.log("City from IP not in our list:", city);
+        }
+      }
+    })
+    .catch(err => {
+      console.log("IP geolocation failed:", err);
+      // Silently fail; user can still search manually.
+    });
+}
+
 (function init() {
   populateCityDropdown(allCities);
   calcProgress();
   renderContacts();
   renderGuide('🩸 Injured Stray');
   loadTheme();
+  detectAndSetCity();   // <-- IP‑based city detection (no permission required)
 })();
 </script>
 </body>
