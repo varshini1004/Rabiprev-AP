@@ -120,7 +120,15 @@ body.light-theme::after {
   border-radius: 20px;
 }
 
-/* NAV — glass */
+/* ========= STICKY HEADER WRAPPER ========= */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: inherit;
+}
+
+/* NAV — normal (not fixed) */
 nav {
   display: flex;
   align-items: center;
@@ -129,11 +137,6 @@ nav {
   background: rgba(5, 7, 10, 0.75);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(220, 38, 38, 0.2);
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 101;
   flex-wrap: wrap;
   gap: 1rem;
 }
@@ -249,7 +252,7 @@ body.light-theme .theme-toggle {
   background: rgba(220,38,38,0.1);
 }
 
-/* control bar — glass */
+/* control bar — normal (not fixed) */
 .cb {
   display: flex;
   align-items: center;
@@ -259,11 +262,6 @@ body.light-theme .theme-toggle {
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
-  position: fixed;
-  top: 56px;
-  left: 0;
-  right: 0;
-  z-index: 100;
 }
 
 body.light-theme .cb {
@@ -372,7 +370,7 @@ body.light-theme .cb {
   padding: 2rem;
   max-width: 1440px;
   margin: 0 auto;
-  padding-top: 120px;
+  /* removed top padding, now natural */
 }
 
 /* left column */
@@ -771,10 +769,6 @@ footer {
     gap: 1.2rem;
     padding: 1rem;
   }
-  .cb {
-    top: 70px;
-    padding: 0.6rem 1rem;
-  }
   .cnb {
     font-size: 2rem;
   }
@@ -786,46 +780,48 @@ footer {
 </head>
 <body>
 
-<nav class="z">
-  <div class="brand">
-    <div class="sos">SOS</div>
-    <div>
-      <div class="bt">RABIPREV · AP</div>
-      <div class="bs">Animal Emergency · 26 Districts</div>
+<div class="sticky-header">
+  <nav class="z">
+    <div class="brand">
+      <div class="sos">SOS</div>
+      <div>
+        <div class="bt">RABIPREV · AP</div>
+        <div class="bs">Animal Emergency · 26 Districts</div>
+      </div>
     </div>
-  </div>
-  <div class="nav-hl">
-    <a class="hp" href="tel:1962"><span class="n">1962</span><span class="l">Vet Ambulance</span></a>
-    <a class="hp" href="tel:108"><span class="n">108</span><span class="l">Human Ambulance</span></a>
-    <a class="hp" href="tel:18002009060"><span class="n">1800-200-9060</span><span class="l">Animal Cruelty</span></a>
-    <a class="hp" href="tel:100"><span class="n">100</span><span class="l">Police</span></a>
-    <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙 Dark</div>
-  </div>
-</nav>
+    <div class="nav-hl">
+      <a class="hp" href="tel:1962"><span class="n">1962</span><span class="l">Vet Ambulance</span></a>
+      <a class="hp" href="tel:108"><span class="n">108</span><span class="l">Human Ambulance</span></a>
+      <a class="hp" href="tel:18002009060"><span class="n">1800-200-9060</span><span class="l">Animal Cruelty</span></a>
+      <a class="hp" href="tel:100"><span class="n">100</span><span class="l">Police</span></a>
+      <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙 Dark</div>
+    </div>
+  </nav>
 
-<div class="cb z">
-  <input class="cs" id="citySearch" type="text" placeholder="Search city…" oninput="filterCities(this.value)" autocomplete="off"/>
-  <div class="csw">
-    <select id="citySelect" onchange="onCityChange(this.value)"></select>
-  </div>
-  <div class="sep"></div>
-  <select class="ss" id="situationSelect" onchange="renderGuide(this.value)">
-    <option>🩸 Injured Stray</option>
-    <option>🐕 Dog Bite</option>
-    <option>🐱 Sick / Weak Stray</option>
-    <option>🐣 Orphaned Baby Animal</option>
-    <option>⚠️ Animal Cruelty</option>
-  </select>
-  <div class="sep"></div>
-  <div class="chips">
-    <div class="chip ngo on" id="f-ngo" onclick="toggleChip(this,'ngo')">🤝 NGO</div>
-    <div class="chip vet on" id="f-vet" onclick="toggleChip(this,'vet')">🏥 Vet</div>
-    <div class="chip govt on" id="f-govt" onclick="toggleChip(this,'govt')">🏛️ Govt</div>
-  </div>
-  <div class="ppill">
-    <span class="pl">Verified</span>
-    <div class="pt"><div class="pf" id="progressBar"></div></div>
-    <span class="pp" id="progressPct">—%</span>
+  <div class="cb z">
+    <input class="cs" id="citySearch" type="text" placeholder="Search city…" oninput="filterCities(this.value)" autocomplete="off"/>
+    <div class="csw">
+      <select id="citySelect" onchange="onCityChange(this.value)"></select>
+    </div>
+    <div class="sep"></div>
+    <select class="ss" id="situationSelect" onchange="renderGuide(this.value)">
+      <option>🩸 Injured Stray</option>
+      <option>🐕 Dog Bite</option>
+      <option>🐱 Sick / Weak Stray</option>
+      <option>🐣 Orphaned Baby Animal</option>
+      <option>⚠️ Animal Cruelty</option>
+    </select>
+    <div class="sep"></div>
+    <div class="chips">
+      <div class="chip ngo on" id="f-ngo" onclick="toggleChip(this,'ngo')">🤝 NGO</div>
+      <div class="chip vet on" id="f-vet" onclick="toggleChip(this,'vet')">🏥 Vet</div>
+      <div class="chip govt on" id="f-govt" onclick="toggleChip(this,'govt')">🏛️ Govt</div>
+    </div>
+    <div class="ppill">
+      <span class="pl">Verified</span>
+      <div class="pt"><div class="pf" id="progressBar"></div></div>
+      <span class="pp" id="progressPct">—%</span>
+    </div>
   </div>
 </div>
 
