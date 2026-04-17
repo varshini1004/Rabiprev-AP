@@ -129,9 +129,11 @@ nav {
   background: rgba(5, 7, 10, 0.75);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(220, 38, 38, 0.2);
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 100;
+  left: 0;
+  right: 0;
+  z-index: 101;
   flex-wrap: wrap;
   gap: 1rem;
 }
@@ -257,9 +259,11 @@ body.light-theme .theme-toggle {
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
-  position: sticky;
-  top: 58px;
-  z-index: 90;
+  position: fixed;
+  top: 56px;
+  left: 0;
+  right: 0;
+  z-index: 100;
 }
 
 body.light-theme .cb {
@@ -368,6 +372,7 @@ body.light-theme .cb {
   padding: 2rem;
   max-width: 1440px;
   margin: 0 auto;
+  padding-top: 120px;
 }
 
 /* left column */
