@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Rabiprev · AP Animal Emergency + Full Contacts + Map Navigation</title>
+<!-- Font Awesome 6 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Main CSS -->
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="sticky-header">
+  <nav class="z">
+    <div class="brand"><div class="sos">SOS</div><div><div class="bt">RABIPREV · AP</div><div class="bs">Animal Emergency · 26 Districts · Full Contacts + Map</div></div></div>
+    <div class="nav-hl">
+      <a class="hp" href="tel:1962"><span class="n">1962</span><span class="l">Vet Ambulance</span></a>
+      <a class="hp" href="tel:108"><span class="n">108</span><span class="l">Human Ambulance</span></a>
+      <a class="hp" href="tel:18002009060"><span class="n">1800-200-9060</span><span class="l">Animal Cruelty</span></a>
+      <a class="hp" href="tel:100"><span class="n">100</span><span class="l">Police</span></a>
+      <div class="theme-toggle" id="themeToggle">🌙 Dark</div>
+    </div>
+  </nav>
+  <div class="cb z">
+    <input class="cs" id="citySearch" type="text" placeholder="Search city…" autocomplete="off">
+    <div class="csw"><select id="citySelect"></select></div>
+    <div class="sep"></div>
+    <select class="ss" id="situationSelect">
+      <option>🩸 Injured Stray</option>
+      <option>🐕 Dog Bite</option>
+      <option>🐱 Sick / Weak Stray</option>
+      <option>🐣 Orphaned Baby Animal</option>
+      <option>⚠️ Animal Cruelty</option>
+    </select>
+    <div class="sep"></div>
+    <div class="chips">
+      <div class="chip ngo on" id="f-ngo">🤝 NGO</div>
+      <div class="chip vet on" id="f-vet">🏥 Vet</div>
+      <div class="chip govt on" id="f-govt">🏛️ Govt</div>
+    </div>
+    <div class="ppill"><span class="pl">Verified</span><div class="pt"><div class="pf" id="progressBar"></div></div><span class="pp" id="progressPct">—%</span></div>
+  </div>
+</div>
+<div class="mg z">
+  <div class="lc" id="contactsCol"></div>
+  <div class="rc">
+    <div class="gp"><div class="gh" id="guideTitle">🩸 Injured Stray</div><div class="steps" id="guideSteps"></div></div>
+    <div class="gb"><h5>1962 — YSR SANCHARA PASU AAROGYA SEVA</h5><p>Toll-Free · 24 Hours · FREE · Vet dispatched to your location. 340 ambulances across all AP districts.</p><small>AP Directorate of Animal Husbandry · NTR Vet Super Specialty Hospital, Labbipet, Vijayawada–520010</small></div>
+    <div class="ip"><h4 style="font-size:0.65rem; letter-spacing:1px;">NATIONAL HELPLINES</h4>
+      <a class="hlr" href="tel:1962"><div class="hln">1962</div><div class="hli"><div class="hn">🚑 Vet Ambulance</div><div class="hd">AP Govt · FREE · 24hr</div></div></a>
+      <a class="hlr" href="tel:108"><div class="hln">108</div><div class="hli"><div class="hn">🚑 Human Ambulance</div><div class="hd">For humans bitten</div></div></a>
+      <a class="hlr" href="tel:18002009060"><div class="hln">1800-200-9060</div><div class="hli"><div class="hn">☎ Animal Cruelty</div><div class="hd">PFA toll-free</div></div></a>
+      <a class="hlr" href="tel:100"><div class="hln">100</div><div class="hli"><div class="hn">🚔 Police</div><div class="hd">Cruelty / danger</div></div></a>
+    </div>
+  </div>
+</div>
+<footer>Rabiprev · Shawred Analytics PLC · Andhra Pradesh · 🗺️ Click "Map" next to any address for Google Maps navigation (full dataset, 26 districts)</footer>
+
+<!-- ES Modules -->
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
