@@ -10,7 +10,7 @@ export function initTheme() {
     toggleBtn.innerHTML = '🌙 Dark';
   }
 }
-
+ 
 export function toggleTheme() {
   const body = document.body;
   const toggleBtn = document.getElementById('themeToggle');
