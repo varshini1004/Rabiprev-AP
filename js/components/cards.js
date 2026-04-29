@@ -1,6 +1,5 @@
 import { AP_CONTACTS } from '../data/contacts.js';
 import { CITY_TO_DISTRICT } from '../data/guides.js';
-
 export function toggleCard(element) {
   document.querySelectorAll('.cc.open').forEach(c => {
     if (c !== element) c.classList.remove('open');
