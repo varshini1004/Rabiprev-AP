@@ -24,4 +24,4 @@ export const AP_CONTACTS = {
   "Manyam (Parvathipuram)": { district: "Manyam", hq: "Parvathipuram", emergency_note: "Remote.", contacts: [{ name:"Government Veterinary Hospital Parvathipuram", type:"Government", phone:["08963-221236"], emergency:false, verified:true, address:"Veterinary Hospital Campus, Parvathipuram – 535501", services:["Vaccination"], hours:"9 AM – 5 PM"}] },
   "Dr. B.R. Ambedkar Konaseema": { district: "Konaseema", hq: "Amalapuram", emergency_note: "Delta district.", contacts: [{ name:"Veterinary Hospital Katrenikona", type:"Government", phone:["08855-233008","1962"], emergency:true, verified:true, address:"Geddanapalli, Katrenikona – 533212", services:["Vaccination"], hours:"9 AM – 5 PM"}] },
   "Annamayya": { district: "Annamayya", hq: "Rayachoti", emergency_note: "New district.", contacts: [{ name:"Government Veterinary Hospital Rayachoti", type:"Government", phone:["08561-251122","1962"], emergency:true, verified:true, address:"Near Bus Stand Area, Rayachoti – 516269", services:["Vaccination","Treatment"], hours:"9 AM – 5 PM"}] }
-};
+}; 
