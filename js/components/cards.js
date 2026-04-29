@@ -4,7 +4,7 @@ import { CITY_TO_DISTRICT } from '../data/guides.js';
 export function toggleCard(element) {
   document.querySelectorAll('.cc.open').forEach(c => {
     if (c !== element) c.classList.remove('open');
-  });
+  }); 
   element.classList.toggle('open');
 }
 
