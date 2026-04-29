@@ -1,12 +1,16 @@
 import { AP_CONTACTS } from '../data/contacts.js';
 import { CITY_TO_DISTRICT } from '../data/guides.js';
 
-// Global handler for card clicks
+// Improved toggle card with JavaScript fallback for smooth expansion
 function handleCardClick(event) {
-  // Find the closest .cc element (the card)
   const card = event.currentTarget;
-  if (card && card.classList) {
-    card.classList.toggle('open');
+  const details = card.querySelector('.cdet');
+  if (card.classList.contains('open')) {
+    card.classList.remove('open');
+    if (details) details.style.maxHeight = null;
+  } else {
+    card.classList.add('open');
+    if (details) details.style.maxHeight = details.scrollHeight + 'px';
   }
 }
 
@@ -20,7 +24,7 @@ export function renderContacts(currentCity, chipState) {
     return;
   }
 
-  // Filter contacts based on chip state
+  // Filter based on chip state
   const typeMap = { 
     ngo: chipState.ngo, 
     vet: chipState.vet, 
@@ -55,7 +59,6 @@ export function renderContacts(currentCity, chipState) {
   contacts.forEach(c => {
     const typeClass = 't-' + (c.type || '').toLowerCase().replace(/\s/g, '-');
     const primaryPhone = Array.isArray(c.phone) ? c.phone[0] : c.phone;
-    const phoneNumbers = Array.isArray(c.phone) ? c.phone : [c.phone];
     const phoneHtml = primaryPhone ? `<a class="cph" href="tel:${primaryPhone.replace(/\s/g, '')}" onclick="event.stopPropagation()">${primaryPhone}</a>` : '';
     const servicesHtml = (c.services || []).map(s => `<span class="stag">${s}</span>`).join('');
     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address)}`;
@@ -93,13 +96,13 @@ export function renderContacts(currentCity, chipState) {
   html += `</div>`;
   container.innerHTML = html;
 
-  // Attach click events to all cards
+  // Attach click events using the improved handler
   document.querySelectorAll('.cc').forEach(card => {
     card.removeEventListener('click', handleCardClick);
     card.addEventListener('click', handleCardClick);
   });
 
-  // Prevent map link clicks from toggling the card
+  // Prevent map link from toggling the card
   document.querySelectorAll('.map-action').forEach(btn => {
     btn.removeEventListener('click', (e) => e.stopPropagation());
     btn.addEventListener('click', (e) => e.stopPropagation());
