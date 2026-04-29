@@ -10,4 +10,4 @@ export function renderGuide(situation) {
       <div class="stx">${s}</div>
     </div>
   `).join('');
-}
+} 
