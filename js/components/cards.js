@@ -1,14 +1,24 @@
 import { AP_CONTACTS } from '../data/contacts.js';
 import { CITY_TO_DISTRICT } from '../data/guides.js';
 
-function handleCardClick(event) {
+let activeCard = null;
+
+function handleCardInteraction(event) {
+  // Prevent bubbling if clicked on interactive elements inside card
+  if (event.target.closest('.cph, .map-action, .share-btn')) return;
+  
   const card = event.currentTarget;
-  card.classList.toggle('open');
+  if (card === activeCard) {
+    card.classList.toggle('open');
+  } else {
+    if (activeCard) activeCard.classList.remove('open');
+    card.classList.add('open');
+    activeCard = card;
+  }
 }
 
 async function handleShare(contact, event) {
   event.stopPropagation();
-
   const phoneNumbers = Array.isArray(contact.phone) ? contact.phone : [contact.phone];
   const phoneList = phoneNumbers.map(p => `📞 ${p}`).join('\n');
   const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.address)}`;
@@ -75,7 +85,6 @@ export function renderContacts(currentCity, chipState) {
     const typeClass = 't-' + (c.type || '').toLowerCase().replace(/\s/g, '-');
     const phoneNumbers = Array.isArray(c.phone) ? c.phone : [c.phone];
     
-    // Generate HTML for all phone numbers (display as comma-separated links)
     const phoneHtml = phoneNumbers.map(phone => 
       `<a class="cph" href="tel:${phone.replace(/\s/g, '')}" onclick="event.stopPropagation()">${phone}</a>`
     ).join(' ');
@@ -121,9 +130,12 @@ export function renderContacts(currentCity, chipState) {
   html += `</div>`;
   container.innerHTML = html;
 
+  // Attach touch/click events to all cards
   document.querySelectorAll('.cc').forEach(card => {
-    card.removeEventListener('click', handleCardClick);
-    card.addEventListener('click', handleCardClick);
+    card.removeEventListener('click', handleCardInteraction);
+    card.removeEventListener('touchstart', handleCardInteraction);
+    card.addEventListener('click', handleCardInteraction);
+    card.addEventListener('touchstart', handleCardInteraction);
   });
 
   document.querySelectorAll('.share-btn').forEach(btn => {
