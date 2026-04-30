@@ -1,6 +1,6 @@
 import { AP_CONTACTS } from './data/contacts.js';
 import { CITY_TO_DISTRICT, EMERGENCY_GUIDE } from './data/guides.js';
-import { renderContacts } from './components/cards.js';   // removed toggleCard
+import { renderContacts } from './components/cards.js';
 import { renderGuide } from './components/guide.js';
 import { initTheme, toggleTheme } from './components/theme.js';
 import { populateCityDropdown } from './utils/filters.js';
@@ -8,32 +8,67 @@ import { calcProgress } from './utils/progress.js';
 
 let currentCity = "Visakhapatnam";
 let chipState = { ngo: true, vet: true, govt: true };
+const allCities = Object.keys(CITY_TO_DISTRICT).sort();
 
 function refreshUI() {
   renderContacts(currentCity, chipState);
   calcProgress();
 }
 
-// Populate city dropdown
-const allCities = Object.keys(CITY_TO_DISTRICT);
-const citySelect = document.getElementById('citySelect');
-allCities.forEach(city => {
-  const option = document.createElement('option');
-  option.value = city;
-  option.textContent = city;
-  if (city === currentCity) option.selected = true;
-  citySelect.appendChild(option);
-});
-
-citySelect.addEventListener('change', (e) => {
-  currentCity = e.target.value;
+function handleCityChange(city) {
+  currentCity = city;
   refreshUI();
+  // Sync dropdown
+  const select = document.getElementById('citySelect');
+  if (select) {
+    Array.from(select.options).forEach(opt => {
+      if (opt.value === city) opt.selected = true;
+    });
+  }
+  // Sync search input
+  const searchInput = document.getElementById('citySearch');
+  if (searchInput) searchInput.value = city;
+}
+
+// Populate initial dropdown
+const citySelect = document.getElementById('citySelect');
+populateCityDropdown(citySelect, allCities, currentCity);
+
+// Dropdown change
+citySelect.addEventListener('change', (e) => {
+  handleCityChange(e.target.value);
 });
 
+// Search input: filter dropdown and auto‑select if one match
+const searchInput = document.getElementById('citySearch');
+searchInput.addEventListener('input', (e) => {
+  const term = e.target.value.trim().toLowerCase();
+  if (term === '') {
+    // Reset to full list, keep current city selected
+    populateCityDropdown(citySelect, allCities, currentCity);
+    return;
+  }
+  const filtered = allCities.filter(c => c.toLowerCase().includes(term));
+  populateCityDropdown(citySelect, filtered, currentCity);
+  if (filtered.length === 1) {
+    handleCityChange(filtered[0]);
+  }
+});
+// On blur, if the field doesn't match a city, revert to current city
+searchInput.addEventListener('blur', () => {
+  const term = searchInput.value.trim();
+  const match = allCities.find(c => c.toLowerCase() === term.toLowerCase());
+  if (!match && term !== '') {
+    searchInput.value = currentCity;
+  }
+});
+
+// Situation selector
 document.getElementById('situationSelect').addEventListener('change', (e) => {
   renderGuide(e.target.value);
 });
 
+// Theme toggle
 document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
 // Chip toggles
