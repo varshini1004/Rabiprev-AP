@@ -3,21 +3,19 @@ import { CITY_TO_DISTRICT } from '../data/guides.js';
 export function populateCityDropdown(selectElement, cities, currentCity) {
   selectElement.innerHTML = '';
   cities.forEach(city => {
-    const opt = document.createElement('option');
-    opt.value = city;
-    opt.textContent = `${city} · ${CITY_TO_DISTRICT[city]}`;
-    if (city === currentCity) opt.selected = true;
-    selectElement.appendChild(opt);
+    const option = document.createElement('option');
+    option.value = city;
+    option.textContent = `${city} · ${CITY_TO_DISTRICT[city]}`;
+    if (city === currentCity) option.selected = true;
+    selectElement.appendChild(option);
   });
 }
 
-export function filterCities(searchTerm, allCities, onCityChangeCallback) {
+export function filterCities(searchTerm, allCities, onCityChangeCallback, currentCity) {
   const filtered = allCities.filter(c => c.toLowerCase().includes(searchTerm.trim().toLowerCase()));
   const select = document.getElementById('citySelect');
-  populateCityDropdown(select, filtered, filtered[0] || '');
-  if (filtered.length) onCityChangeCallback(filtered[0]);
-}
-
-export function onCityChange(city, updateCallback) {
-  updateCallback(city);
+  populateCityDropdown(select, filtered, currentCity);
+  if (filtered.length === 1) {
+    onCityChangeCallback(filtered[0]);
+  }
 }
