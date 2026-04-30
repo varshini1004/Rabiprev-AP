@@ -27,7 +27,7 @@
     </div>
   </nav>
   <div class="cb z">
-    <input class="cs" id="citySearch" type="text" placeholder="Search city…" autocomplete="off">
+    <!-- Search bar removed -->
     <div class="csw"><select id="citySelect"></select></div>
     <div class="sep"></div>
     <select class="ss" id="situationSelect">
@@ -64,7 +64,7 @@
 <!-- Main App Module -->
 <script type="module" src="js/app.js"></script>
 
-<!-- Service Worker Registration (runs after page loads, doesn't block) -->
+<!-- Service Worker Registration -->
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
