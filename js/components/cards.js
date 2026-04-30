@@ -1,26 +1,24 @@
 import { AP_CONTACTS } from '../data/contacts.js';
 import { CITY_TO_DISTRICT } from '../data/guides.js';
 
-// ---------- Card expand/collapse ----------
 function handleCardClick(event) {
   const card = event.currentTarget;
   card.classList.toggle('open');
 }
 
-// ---------- Share function (WhatsApp + fallback) ----------
 async function handleShare(contact, event) {
   event.stopPropagation();
 
-  const phone = Array.isArray(contact.phone) ? contact.phone[0] : contact.phone;
+  const phoneNumbers = Array.isArray(contact.phone) ? contact.phone : [contact.phone];
+  const phoneList = phoneNumbers.map(p => `📞 ${p}`).join('\n');
   const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.address)}`;
-  const shareMessage = `🐾 *${contact.name}*\n📞 ${phone}\n📍 ${contact.address}\n🗺️ Map: ${mapUrl}\n🏷️ Type: ${contact.type}`;
+  const shareMessage = `🐾 *${contact.name}*\n${phoneList}\n📍 ${contact.address}\n🗺️ Map: ${mapUrl}\n🏷️ Type: ${contact.type}`;
 
-  // Try native Web Share API first (mobile)
   if (navigator.share) {
     try {
       await navigator.share({
         title: `🐾 ${contact.name}`,
-        text: `${contact.name}\n📞 ${phone}\n📍 ${contact.address}\n🗺️ ${mapUrl}`,
+        text: `${contact.name}\n${phoneNumbers.join(', ')}\n📍 ${contact.address}\n🗺️ ${mapUrl}`,
         url: mapUrl,
       });
     } catch (err) {
@@ -29,12 +27,10 @@ async function handleShare(contact, event) {
     return;
   }
 
-  // Fallback 1: WhatsApp direct link (works on mobile & desktop)
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
   window.open(whatsappUrl, '_blank');
 }
 
-// ---------- Render contacts with Share button ----------
 export function renderContacts(currentCity, chipState) {
   const dist = CITY_TO_DISTRICT[currentCity];
   const data = AP_CONTACTS[dist];
@@ -77,14 +73,15 @@ export function renderContacts(currentCity, chipState) {
 
   contacts.forEach(c => {
     const typeClass = 't-' + (c.type || '').toLowerCase().replace(/\s/g, '-');
-    const phoneNumber = Array.isArray(c.phone) ? c.phone[0] : c.phone;
-    const phoneHtml = phoneNumber
-      ? `<a class="cph" href="tel:${phoneNumber.replace(/\s/g, '')}" onclick="event.stopPropagation()">${phoneNumber}</a>`
-      : '';
+    const phoneNumbers = Array.isArray(c.phone) ? c.phone : [c.phone];
+    
+    // Generate HTML for all phone numbers (display as comma-separated links)
+    const phoneHtml = phoneNumbers.map(phone => 
+      `<a class="cph" href="tel:${phone.replace(/\s/g, '')}" onclick="event.stopPropagation()">${phone}</a>`
+    ).join(' ');
+
     const servicesHtml = (c.services || []).map(s => `<span class="stag">${s}</span>`).join('');
     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address)}`;
-
-    // Escaping for JSON in data-contact attribute
     const contactJson = JSON.stringify(c).replace(/\\/g, '\\\\').replace(/"/g, '&quot;');
 
     const addressLine = `
@@ -108,7 +105,7 @@ export function renderContacts(currentCity, chipState) {
             <div class="cname">${c.name}</div>
             <div class="ctype">${c.type} · ${c.hours || ''}</div>
           </div>
-          ${phoneHtml}
+          <div class="phone-group">${phoneHtml}</div>
           <div class="chev">▾</div>
         </div>
         <div class="cdet">
@@ -124,25 +121,21 @@ export function renderContacts(currentCity, chipState) {
   html += `</div>`;
   container.innerHTML = html;
 
-  // Attach expand/collapse events
   document.querySelectorAll('.cc').forEach(card => {
     card.removeEventListener('click', handleCardClick);
     card.addEventListener('click', handleCardClick);
   });
 
-  // Attach share events
   document.querySelectorAll('.share-btn').forEach(btn => {
     btn.removeEventListener('click', shareHandler);
     btn.addEventListener('click', shareHandler);
   });
 
-  // Prevent map links from toggling card
   document.querySelectorAll('.map-action').forEach(btn => {
     btn.addEventListener('click', e => e.stopPropagation());
   });
 }
 
-// Helper to parse contact data from button attribute
 function shareHandler(event) {
   const btn = event.currentTarget;
   let contact;
