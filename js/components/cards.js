@@ -1,20 +1,12 @@
 import { AP_CONTACTS } from '../data/contacts.js';
 import { CITY_TO_DISTRICT } from '../data/guides.js';
 
-let activeCard = null;
-
-function handleCardInteraction(event) {
-  // Prevent bubbling if clicked on interactive elements inside card
-  if (event.target.closest('.cph, .map-action, .share-btn')) return;
-  
+// Use both click and touch for mobile responsiveness
+function handleCardExpand(event) {
   const card = event.currentTarget;
-  if (card === activeCard) {
-    card.classList.toggle('open');
-  } else {
-    if (activeCard) activeCard.classList.remove('open');
-    card.classList.add('open');
-    activeCard = card;
-  }
+  // Prevent any default touch behavior that might interfere
+  event.preventDefault();
+  card.classList.toggle('open');
 }
 
 async function handleShare(contact, event) {
@@ -28,7 +20,7 @@ async function handleShare(contact, event) {
     try {
       await navigator.share({
         title: `🐾 ${contact.name}`,
-        text: `${contact.name}\n${phoneNumbers.join(', ')}\n📍 ${contact.address}\n🗺️ ${mapUrl}`,
+        text: `${contact.name}\n${phoneNumbers.join(', ')}\n📍 ${contact.address}`,
         url: mapUrl,
       });
     } catch (err) {
@@ -84,8 +76,7 @@ export function renderContacts(currentCity, chipState) {
   contacts.forEach(c => {
     const typeClass = 't-' + (c.type || '').toLowerCase().replace(/\s/g, '-');
     const phoneNumbers = Array.isArray(c.phone) ? c.phone : [c.phone];
-    
-    const phoneHtml = phoneNumbers.map(phone => 
+    const phoneHtml = phoneNumbers.map(phone =>
       `<a class="cph" href="tel:${phone.replace(/\s/g, '')}" onclick="event.stopPropagation()">${phone}</a>`
     ).join(' ');
 
@@ -130,21 +121,25 @@ export function renderContacts(currentCity, chipState) {
   html += `</div>`;
   container.innerHTML = html;
 
-  // Attach touch/click events to all cards
+  // Bind both touch and click for card expansion (mobile + desktop)
   document.querySelectorAll('.cc').forEach(card => {
-    card.removeEventListener('click', handleCardInteraction);
-    card.removeEventListener('touchstart', handleCardInteraction);
-    card.addEventListener('click', handleCardInteraction);
-    card.addEventListener('touchstart', handleCardInteraction);
+    ['click', 'touchstart'].forEach(eventType => {
+      card.removeEventListener(eventType, handleCardExpand);
+      card.addEventListener(eventType, handleCardExpand);
+    });
   });
 
+  // Share buttons
   document.querySelectorAll('.share-btn').forEach(btn => {
     btn.removeEventListener('click', shareHandler);
     btn.addEventListener('click', shareHandler);
+    // Also prevent touchstart from bubbling to card
+    btn.addEventListener('touchstart', (e) => e.stopPropagation());
   });
 
   document.querySelectorAll('.map-action').forEach(btn => {
     btn.addEventListener('click', e => e.stopPropagation());
+    btn.addEventListener('touchstart', e => e.stopPropagation());
   });
 }
 
