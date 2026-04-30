@@ -9,35 +9,15 @@ let currentCity = "Visakhapatnam";
 let chipState = { ngo: true, vet: true, govt: true };
 const allCities = Object.keys(CITY_TO_DISTRICT).sort();
 
-// DOM elements
 const searchInput = document.getElementById('citySearch');
 const citySelect = document.getElementById('citySelect');
-
-// Flags to avoid recursion
-let updatingFromSearch = false;
-let updatingFromDropdown = false;
 
 function refreshUI() {
   renderContacts(currentCity, chipState);
   calcProgress();
-  
-  // Update dropdown without triggering change event
-  if (citySelect && !updatingFromDropdown) {
-    updatingFromDropdown = true;
-    Array.from(citySelect.options).forEach(opt => {
-      if (opt.value === currentCity) opt.selected = true;
-    });
-    updatingFromDropdown = false;
-  }
-  
-  // Update search input WITHOUT TRIGGERING INPUT EVENT
-  if (searchInput && !updatingFromSearch) {
-    updatingFromSearch = true;
-    if (searchInput.value !== currentCity) {
-      searchInput.value = currentCity;
-    }
-    updatingFromSearch = false;
-  }
+  // Update select and input without triggering events
+  citySelect.value = currentCity;
+  searchInput.value = currentCity;
 }
 
 function setCity(city) {
@@ -47,67 +27,58 @@ function setCity(city) {
   }
 }
 
-function populateDropdown(filteredCities, selectedCity) {
-  if (!citySelect) return;
-  const oldValue = citySelect.value;
+// Populate dropdown with all cities initially
+citySelect.innerHTML = '';
+allCities.forEach(city => {
+  const opt = document.createElement('option');
+  opt.value = city;
+  opt.textContent = `${city} · ${CITY_TO_DISTRICT[city]}`;
+  citySelect.appendChild(opt);
+});
+citySelect.value = currentCity;
+
+// Search input: filter dropdown options based on typed text
+searchInput.addEventListener('input', (e) => {
+  const term = e.target.value.trim().toLowerCase();
+  // Clear and rebuild dropdown options
   citySelect.innerHTML = '';
-  filteredCities.forEach(city => {
-    const option = document.createElement('option');
-    option.value = city;
-    option.textContent = `${city} · ${CITY_TO_DISTRICT[city]}`;
-    if (city === selectedCity) option.selected = true;
-    citySelect.appendChild(option);
+  const filtered = term === '' ? allCities : allCities.filter(city => city.toLowerCase().includes(term));
+  filtered.forEach(city => {
+    const opt = document.createElement('option');
+    opt.value = city;
+    opt.textContent = `${city} · ${CITY_TO_DISTRICT[city]}`;
+    citySelect.appendChild(opt);
   });
-}
+  if (filtered.length === 1) {
+    // If only one match, auto-select it
+    setCity(filtered[0]);
+  }
+});
 
-// Initial population
-populateDropdown(allCities, currentCity);
-refreshUI();
-
-// Dropdown change
+// When dropdown changes (user selects from filtered list)
 citySelect.addEventListener('change', (e) => {
-  if (updatingFromDropdown) return;
   setCity(e.target.value);
 });
 
-// Search input: user types -> filter dropdown, but do NOT change city automatically
-searchInput.addEventListener('input', (e) => {
-  if (updatingFromSearch) return;
-  const term = e.target.value.trim().toLowerCase();
-  if (term === '') {
-    populateDropdown(allCities, currentCity);
-    return;
-  }
-  const filtered = allCities.filter(city => city.toLowerCase().includes(term));
-  populateDropdown(filtered, currentCity);
-});
-
-// Blur: if exact match found, change city, otherwise revert
+// On blur of search input, if current value doesn't match any city exactly, revert to current city
 searchInput.addEventListener('blur', () => {
-  const term = searchInput.value.trim();
-  const exactMatch = allCities.find(c => c.toLowerCase() === term.toLowerCase());
-  if (exactMatch) {
-    setCity(exactMatch);
-  } else if (term !== '') {
+  const exactMatch = allCities.find(c => c.toLowerCase() === searchInput.value.trim().toLowerCase());
+  if (!exactMatch) {
     searchInput.value = currentCity;
+  } else if (exactMatch !== currentCity) {
+    setCity(exactMatch);
   }
 });
 
-// Enter key: same as blur
+// Enter key on search input: act like blur
 searchInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
     e.preventDefault();
-    const term = searchInput.value.trim();
-    const exactMatch = allCities.find(c => c.toLowerCase() === term.toLowerCase());
-    if (exactMatch) {
-      setCity(exactMatch);
-    } else {
-      searchInput.value = currentCity;
-    }
+    searchInput.blur();
   }
 });
 
-// Situation dropdown
+// Situation selector
 document.getElementById('situationSelect').addEventListener('change', (e) => {
   renderGuide(e.target.value);
 });
