@@ -9,15 +9,20 @@ let currentCity = "Visakhapatnam";
 let chipState = { ngo: true, vet: true, govt: true };
 const allCities = Object.keys(CITY_TO_DISTRICT).sort();
 
-const searchInput = document.getElementById('citySearch');
 const citySelect = document.getElementById('citySelect');
 
 function refreshUI() {
   renderContacts(currentCity, chipState);
   calcProgress();
-  // Update select and input without triggering events
-  citySelect.value = currentCity;
-  searchInput.value = currentCity;
+  // Update dropdown selection
+  if (citySelect) {
+    for (let i = 0; i < citySelect.options.length; i++) {
+      if (citySelect.options[i].value === currentCity) {
+        citySelect.selectedIndex = i;
+        break;
+      }
+    }
+  }
 }
 
 function setCity(city) {
@@ -27,7 +32,7 @@ function setCity(city) {
   }
 }
 
-// Populate dropdown with all cities initially
+// Populate dropdown with all cities
 citySelect.innerHTML = '';
 allCities.forEach(city => {
   const opt = document.createElement('option');
@@ -37,45 +42,9 @@ allCities.forEach(city => {
 });
 citySelect.value = currentCity;
 
-// Search input: filter dropdown options based on typed text
-searchInput.addEventListener('input', (e) => {
-  const term = e.target.value.trim().toLowerCase();
-  // Clear and rebuild dropdown options
-  citySelect.innerHTML = '';
-  const filtered = term === '' ? allCities : allCities.filter(city => city.toLowerCase().includes(term));
-  filtered.forEach(city => {
-    const opt = document.createElement('option');
-    opt.value = city;
-    opt.textContent = `${city} · ${CITY_TO_DISTRICT[city]}`;
-    citySelect.appendChild(opt);
-  });
-  if (filtered.length === 1) {
-    // If only one match, auto-select it
-    setCity(filtered[0]);
-  }
-});
-
-// When dropdown changes (user selects from filtered list)
+// Dropdown change event
 citySelect.addEventListener('change', (e) => {
   setCity(e.target.value);
-});
-
-// On blur of search input, if current value doesn't match any city exactly, revert to current city
-searchInput.addEventListener('blur', () => {
-  const exactMatch = allCities.find(c => c.toLowerCase() === searchInput.value.trim().toLowerCase());
-  if (!exactMatch) {
-    searchInput.value = currentCity;
-  } else if (exactMatch !== currentCity) {
-    setCity(exactMatch);
-  }
-});
-
-// Enter key on search input: act like blur
-searchInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    searchInput.blur();
-  }
 });
 
 // Situation selector
