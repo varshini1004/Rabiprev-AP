@@ -24,9 +24,12 @@ HTML5 · CSS3 · JavaScript (ES6) · PWA (Service Worker + Manifest) · GitHub P
 
 ---
 
-🔮 Planned Updates
+## 🔮 Planned Updates
 Community incident map · Vaccination reminders · Voice search · Multi‑language
 
+---
 
-👩‍💻 Author
+## 👩‍💻 Author
 D. Sai Varshini 
+
+---
